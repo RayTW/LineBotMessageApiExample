@@ -13,7 +13,7 @@ public class LineBotApplication {
   @EventMapping
   public Message handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
     final String originalMessageText = event.getMessage().getText();
-    return new TextMessage(originalMessageText);
+    return new TextMessage("echo:" + originalMessageText);
   }
 
   @EventMapping
