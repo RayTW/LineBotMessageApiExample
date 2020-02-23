@@ -11,11 +11,14 @@ buildscript {
 }
 
 apply plugin: 'java'
-
+apply plugin: 'org.springframework.boot'
 
 version = '1.0'
 sourceCompatibility = '1.8'
 
+repositories {
+	mavenCentral()
+}
 
 jar {
   manifest {
@@ -26,9 +29,8 @@ jar {
   from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
-repositories {
-	mavenCentral()
-}
+
+
 
 dependencies {
   // https://mvnrepository.com/artifact/com.linecorp.bot/line-bot-api-client
