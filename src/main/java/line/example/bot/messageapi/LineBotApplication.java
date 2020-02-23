@@ -23,13 +23,12 @@ public class LineBotApplication {
   @EventMapping
   public Message handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
     final String originalMessageText = event.getMessage().getText();
-
     if (originalMessageText.startsWith("/echo")) {
       return new TextMessage("echo:" + originalMessageText);
     } else if (originalMessageText.startsWith("/傳說")) {
       return new TextMessage("傳說最新訊息: https://moba.garena.tw/news");
-    } else if (originalMessageText.startsWith("/系統")) {
-      return new TextMessage("channelTokenToken=" + System.getProperty("line.bot.channelToken"));
+    } else if (originalMessageText.startsWith("/我的id")) {
+      return new TextMessage(event.getSource().getUserId());
     }
     return null;
   }
@@ -40,6 +39,7 @@ public class LineBotApplication {
   }
 
   public static void main(String[] args) {
+    System.out.println("args=>" + args.length);
     SpringApplication.run(LineBotApplication.class, args);
   }
 }
