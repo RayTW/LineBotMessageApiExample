@@ -1,1 +1,1 @@
-web: java -jar build/libs/gradle-getting-started-1.0.jar
+web: java $JAVA_OPTS -jar build/libs/LineBotMessageApiExample-1.0.jar --server.port=$PORT
