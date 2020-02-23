@@ -14,10 +14,24 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @LineMessageHandler
 public class LineBotApplication {
 
+  /**
+   * BOT機器人接收訊息.
+   *
+   * @param event 訊息事件
+   * @return
+   */
   @EventMapping
   public Message handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
     final String originalMessageText = event.getMessage().getText();
-    return new TextMessage("echo:" + originalMessageText);
+
+    if (originalMessageText.startsWith("/echo")) {
+      return new TextMessage("echo:" + originalMessageText);
+    } else if (originalMessageText.startsWith("/傳說")) {
+      return new TextMessage("傳說最新訊息: https://moba.garena.tw/news");
+    } else if (originalMessageText.startsWith("/系統")) {
+      return new TextMessage("channelTokenToken=" + System.getProperty("line.bot.channelToken"));
+    }
+    return null;
   }
 
   @EventMapping
