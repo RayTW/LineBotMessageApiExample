@@ -5,6 +5,7 @@ import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
 import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.model.message.TextMessage;
+import com.linecorp.bot.model.profile.UserProfileResponse;
 import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
 import org.springframework.boot.SpringApplication;
@@ -31,29 +32,21 @@ public class LineBotApplication {
     } else if (originalMessageText.startsWith("/user")) {
       final String userId = event.getSource().getUserId();
       final StringBuilder txt = new StringBuilder();
-      LineBot.getInstance()
-          .getInfo(
-              userId,
-              (info, throwable) -> {
-                if (info != null) {
-                  txt.append("使用者名稱:");
-                  txt.append(info.getDisplayName());
-                  txt.append(System.lineSeparator());
-                  txt.append("使用者狀態:");
-                  txt.append(info.getStatusMessage());
-                  txt.append(System.lineSeparator());
-                  txt.append("使用者圖片:");
-                  txt.append(info.getPictureUrl());
-                }
-                if (throwable != null) {
-                  txt.append(throwable.toString());
-                }
-              });
+      UserProfileResponse info = LineBot.getInstance().getInfo(userId);
 
-      if (txt.length() > 0) {
+      if (info != null) {
+        txt.append("使用者名稱:");
+        txt.append(info.getDisplayName());
+        txt.append(System.lineSeparator());
+        txt.append("使用者狀態:");
+        txt.append(info.getStatusMessage());
+        txt.append(System.lineSeparator());
+        txt.append("使用者圖片:");
+        txt.append(info.getPictureUrl());
         return new TextMessage(txt.toString());
+      } else {
+        return new TextMessage("出錯了！");
       }
-      return null;
     }
     return null;
   }

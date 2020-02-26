@@ -6,7 +6,6 @@ import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.model.profile.UserProfileResponse;
 import com.linecorp.bot.model.response.BotApiResponse;
-import java.util.function.BiConsumer;
 
 public class LineBot {
   private static LineBot instance = new LineBot();
@@ -23,11 +22,12 @@ public class LineBot {
 
   /**
    * 取得user資訊.
+   *
    * @param userId 用戶id
    * @return
    */
-  public void getInfo(String userId, BiConsumer<UserProfileResponse, Throwable> action) {
-    lineMessagingClient.getProfile(userId).whenComplete(action);
+  public UserProfileResponse getInfo(String userId) {
+    return lineMessagingClient.getProfile(userId).getNow(null);
   }
 
   /**
@@ -51,5 +51,4 @@ public class LineBot {
       e.printStackTrace();
     }
   }
-  
 }
