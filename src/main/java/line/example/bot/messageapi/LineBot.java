@@ -6,14 +6,13 @@ import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.model.profile.UserProfileResponse;
 import com.linecorp.bot.model.response.BotApiResponse;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
 
 public class LineBot {
   private static LineBot instance = new LineBot();
   private LineMessagingClient lineMessagingClient;
 
-  public LineBot() {
+  private LineBot() {
     lineMessagingClient =
         LineMessagingClient.builder(System.getenv("LINE_BOT_CHANNEL_TOKEN")).build();
   }
@@ -27,17 +26,8 @@ public class LineBot {
    * @param userId 用戶id
    * @return
    */
-  public Optional<UserProfileResponse> getInfo(String userId) {
-    UserProfileResponse ret = null;
-    try {
-      ret = lineMessagingClient.getProfile(userId).get();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    } catch (ExecutionException e) {
-      e.printStackTrace();
-    }
-
-    return Optional.ofNullable(ret);
+  public void getInfo(String userId, BiConsumer<UserProfileResponse, Throwable> action) {
+    lineMessagingClient.getProfile(userId).whenComplete(action);
   }
 
   /**
@@ -61,4 +51,5 @@ public class LineBot {
       e.printStackTrace();
     }
   }
+  
 }
