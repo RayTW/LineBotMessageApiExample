@@ -32,9 +32,8 @@ public class LineBotApplication {
     } else if (originalMessageText.startsWith("/user")) {
       final String userId = event.getSource().getUserId();
       final StringBuilder txt = new StringBuilder();
-      UserProfileResponse info = LineBot.getInstance().getInfo(userId);
-
-      if (info != null) {
+      try {
+        UserProfileResponse info = LineBot.getInstance().getInfo(userId);
         txt.append("使用者名稱:");
         txt.append(info.getDisplayName());
         txt.append(System.lineSeparator());
@@ -44,8 +43,9 @@ public class LineBotApplication {
         txt.append("使用者圖片:");
         txt.append(info.getPictureUrl());
         return new TextMessage(txt.toString());
-      } else {
-        return new TextMessage("出錯了！");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return new TextMessage("出錯了！" + e);
       }
     }
     return null;

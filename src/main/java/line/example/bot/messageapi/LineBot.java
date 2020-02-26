@@ -26,8 +26,8 @@ public class LineBot {
    * @param userId 用戶id
    * @return
    */
-  public UserProfileResponse getInfo(String userId) {
-    return lineMessagingClient.getProfile(userId).getNow(null);
+  public UserProfileResponse getInfo(String userId) throws Exception {
+    return lineMessagingClient.getProfile(userId).get();
   }
 
   /**
