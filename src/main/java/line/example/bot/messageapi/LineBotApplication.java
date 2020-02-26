@@ -28,7 +28,7 @@ public class LineBotApplication {
     } else if (originalMessageText.startsWith("/傳說")) {
       return new TextMessage("傳說最新訊息: https://moba.garena.tw/news");
     } else if (originalMessageText.startsWith("/user")) {
-      final String userId = event.getSource().getUserId();
+      final String userId = event.getSource().getSenderId();
       final StringBuilder txt = new StringBuilder();
       LineBot.getInstance()
           .getInfo(userId)
@@ -39,8 +39,14 @@ public class LineBotApplication {
                 txt.append(System.lineSeparator());
                 txt.append("使用者狀態:");
                 txt.append(info.getStatusMessage());
+                txt.append(System.lineSeparator());
+                txt.append("使用者圖片:");
+                txt.append(info.getPictureUrl());
               });
-      return new TextMessage(txt.toString());
+      if (txt.length() > 0) {
+        return new TextMessage(txt.toString());
+      }
+      return null;
     }
     return null;
   }
