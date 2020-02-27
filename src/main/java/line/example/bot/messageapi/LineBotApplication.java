@@ -45,7 +45,7 @@ public class LineBotApplication {
         return new TextMessage(txt.toString());
       } catch (Exception e) {
         e.printStackTrace();
-        return new TextMessage("出錯了！" + e);
+        return new TextMessage("userId[" + userId + "],出錯了！" + e);
       }
     }
     return null;

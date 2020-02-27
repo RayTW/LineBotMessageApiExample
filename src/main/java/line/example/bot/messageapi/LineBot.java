@@ -44,7 +44,17 @@ public class LineBot {
     PushMessage push = new PushMessage(userId, message);
 
     try {
-      BotApiResponse response = lineMessagingClient.pushMessage(push).get();
+      BotApiResponse response =
+          lineMessagingClient
+              .pushMessage(push)
+              .handleAsync(
+                  (botApiResponse, exception) -> {
+                    if (exception != null) {
+                      System.out.println("execption=>" + exception);
+                    }
+                    return botApiResponse;
+                  })
+              .get();
 
       System.out.println(response);
     } catch (Exception e) {
