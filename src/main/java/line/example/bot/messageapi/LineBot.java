@@ -23,11 +23,24 @@ public class LineBot {
   /**
    * 取得user資訊.
    *
+   * @param roomIdOrGroupId 房id或群id
    * @param userId 用戶id
    * @return
    */
-  public UserProfileResponse getInfo(String userId) throws Exception {
-    return lineMessagingClient.getProfile(userId).get();
+  public UserProfileResponse getInfo(String roomIdOrGroupId, String userId) throws Exception {
+    UserProfileResponse ret = null;
+    System.out.println("roomIdOrGroupId[" + roomIdOrGroupId + "],userId[" + userId + "]");
+
+    try {
+      ret = lineMessagingClient.getGroupMemberProfile(roomIdOrGroupId, userId).get();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    if (ret == null) {
+      ret = lineMessagingClient.getRoomMemberProfile(roomIdOrGroupId, userId).get();
+    }
+    return ret;
   }
 
   /**
