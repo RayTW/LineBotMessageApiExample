@@ -29,8 +29,6 @@ public class LineBot {
    */
   public UserProfileResponse getInfo(String roomIdOrGroupId, String userId) throws Exception {
     UserProfileResponse ret = null;
-    System.out.println("roomIdOrGroupId[" + roomIdOrGroupId + "],userId[" + userId + "]");
-
     try {
       ret = lineMessagingClient.getGroupMemberProfile(roomIdOrGroupId, userId).get();
     } catch (Exception e) {
@@ -68,7 +66,6 @@ public class LineBot {
                     return botApiResponse;
                   })
               .get();
-
       System.out.println(response);
     } catch (Exception e) {
       e.printStackTrace();

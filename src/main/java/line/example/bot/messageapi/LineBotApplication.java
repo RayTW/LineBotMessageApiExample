@@ -38,9 +38,6 @@ public class LineBotApplication {
         txt.append("使用者名稱:");
         txt.append(info.getDisplayName());
         txt.append(System.lineSeparator());
-        txt.append("使用者狀態:");
-        txt.append(info.getStatusMessage());
-        txt.append(System.lineSeparator());
         txt.append("使用者圖片:");
         txt.append(info.getPictureUrl());
         return new TextMessage(txt.toString());
@@ -59,7 +56,6 @@ public class LineBotApplication {
   }
 
   public static void main(String[] args) {
-    System.out.println("args=>" + args.length);
     SpringApplication.run(LineBotApplication.class, args);
   }
 }
