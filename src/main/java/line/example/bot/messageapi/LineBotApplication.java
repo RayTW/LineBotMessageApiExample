@@ -102,7 +102,7 @@ public class LineBotApplication {
           Optional<Sweepstake> sweepstake = getSweepstake(sweepstakesName);
 
           if (sweepstake.isPresent()) {
-            return new TextMessage(sweepstake.toString());
+            return new TextMessage(sweepstake.get().toString());
           } else {
             return new TextMessage("查看抽獎活動結果，目前沒有\"" + sweepstakesName + "\"抽獎活動");
           }
