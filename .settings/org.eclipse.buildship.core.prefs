@@ -1,7 +1,2 @@
-build.scans.enabled=false
-connection.gradle.distribution=GRADLE_DISTRIBUTION(VERSION(5.6))
 connection.project.dir=
 eclipse.preferences.version=1
-gradle.user.home=
-offline.mode=false
-override.workspace.settings=true

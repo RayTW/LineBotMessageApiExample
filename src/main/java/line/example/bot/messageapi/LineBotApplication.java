@@ -8,12 +8,75 @@ import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.model.profile.UserProfileResponse;
 import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @LineMessageHandler
 public class LineBotApplication {
+  private Map<BotCommand, FunctionThrowable<MessageEvent<TextMessageContent>, Message>> map;
+
+  public LineBotApplication() {
+    stepup();
+  }
+
+  private void stepup() {
+    // 設定接收指令後要回應的訊息
+    map = Collections.synchronizedMap(new EnumMap<>(BotCommand.class));
+
+    map.put(
+        BotCommand.HELP,
+        (event) -> {
+          return new TextMessage(BotCommand.getCommandsDetail());
+        });
+
+    map.put(
+        BotCommand.ECHO,
+        (event) -> {
+          return new TextMessage(event.getMessage().getText().replace("/echo", ""));
+        });
+
+    map.put(
+        BotCommand.ME,
+        (event) -> {
+          String userId = event.getSource().getUserId();
+          String senderId = event.getSource().getSenderId();
+          UserProfileResponse info = LineBot.getInstance().getInfo(senderId, userId);
+          StringBuilder txt = new StringBuilder();
+
+          txt.append("使用者名稱:");
+          txt.append(info.getDisplayName());
+          txt.append(System.lineSeparator());
+          txt.append("使用者圖片:");
+          txt.append(info.getPictureUrl());
+          return new TextMessage(txt.toString());
+        });
+
+    map.put(
+        BotCommand.USER_ID,
+        (event) -> {
+          return new TextMessage("user id :" + event.getSource().getUserId());
+        });
+
+    map.put(
+        BotCommand.SWEEPSTAKE,
+        (event) -> {
+          String[] args = event.getMessage().getText().split(" ");
+          String sweepstakesName = args[1];
+          String keyword = args[2];
+
+          StringBuilder txt = new StringBuilder();
+
+          txt.append("抽將活動名稱:");
+          txt.append(sweepstakesName);
+          txt.append(System.lineSeparator());
+          txt.append("以下留言\"" + keyword + "\"即可參加抽獎喔");
+          return new TextMessage(txt.toString());
+        });
+  }
 
   /**
    * BOT機器人接收訊息.
@@ -23,36 +86,36 @@ public class LineBotApplication {
    */
   @EventMapping
   public Message handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
-    final String originalMessageText = event.getMessage().getText();
+    String originalMessageText = event.getMessage().getText();
 
-    if (originalMessageText.startsWith("/echo")) {
-      return new TextMessage(originalMessageText.replace("/echo", ""));
-    } else if (originalMessageText.startsWith("/傳說")) {
-      return new TextMessage("傳說最新訊息: https://moba.garena.tw/news");
-    } else if (originalMessageText.startsWith("/user")) {
-      final String userId = event.getSource().getUserId();
-      final String senderId = event.getSource().getSenderId();
-      final StringBuilder txt = new StringBuilder();
-      try {
-        UserProfileResponse info = LineBot.getInstance().getInfo(senderId, userId);
-        txt.append("使用者名稱:");
-        txt.append(info.getDisplayName());
-        txt.append(System.lineSeparator());
-        txt.append("使用者圖片:");
-        txt.append(info.getPictureUrl());
-        return new TextMessage(txt.toString());
-      } catch (Exception e) {
-        e.printStackTrace();
-        return new TextMessage("userId[" + userId + "],出錯了！" + e);
+    try {
+      String command = originalMessageText.split(" ")[0];
+      BotCommand botEnum = BotCommand.enumOf(command);
+      FunctionThrowable<MessageEvent<TextMessageContent>, Message> action = map.get(botEnum);
+
+      // 沒有符合的指令
+      if (action == null) {
+        return null;
       }
+      // 符合的指令
+      return action.apply(event);
+    } catch (IllegalArgumentException e) {
+      // not do anything
+      return null;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new TextMessage("出錯了，救救我~" + e);
     }
-    return null;
+  }
+
+  public Map<BotCommand, FunctionThrowable<MessageEvent<TextMessageContent>, Message>>
+      getActionMap() {
+    return map;
   }
 
   @EventMapping
   public void handleDefaultMessageEvent(Event event) {
-    System.out.println("event: " + event);
-    event.getSource();
+    // not do anything
   }
 
   public static void main(String[] args) {
