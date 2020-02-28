@@ -29,4 +29,22 @@ public class LineBotApplicationTest {
       e.printStackTrace();
     }
   }
+
+  @Test
+  public void testHandleTextMessageUseingNormalMessage() {
+    LineBotApplication obj = new LineBotApplication();
+    MessageEvent<TextMessageContent> event =
+        new MessageEvent<>(
+            "replyToken",
+            new UserSource("U1234"),
+            new TextMessageContent("122", "訊息"),
+            Instant.now());
+
+    try {
+      TextMessage msg = (TextMessage) obj.handleTextMessageEvent(event);
+      System.out.println(msg);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 }

@@ -4,10 +4,12 @@ import java.util.StringJoiner;
 
 public enum BotCommand {
   HELP("全部Bot指令", "/help", "/??", "/幫助"),
-  ECHO("回應相同訊息,ex: /echo 訊息", "/echo"),
+  ECHO("回應相同訊息, /echo [訊息] ex: /echo 我是訊息", "/echo"),
   USER_ID("回應用戶ID,ex: /userid", "/userid", "/用戶"),
   ME("回應用戶個人資訊,ex: /我", "/me", "/我"),
-  SWEEPSTAKE("啟動抽獎活動,ex: /抽獎 留言抽", "/sweepstakes", "/抽獎");
+  LUCKDRAW("抽獎活動, /抽獎 [抽獎活動名稱] [留言] ex: /抽獎 抽iphone手機 大吉大利", "/luckydraw", "/抽獎"),
+  LUCKDRAW_FINISH("抽獎活動開獎, /開獎 [抽獎活動名稱] [要選出的抽獎人數] ex: /開獎 抽iphone手機 3", "/lucky", "/開獎"),
+  LUCKDRAW_STATUS("抽獎活動狀態, /抽獎狀態 [抽獎活動名稱] ex: /抽獎狀態 抽iphone手機", "/luckydrawstatus", "/抽獎狀態");
 
   private final String[] commands;
   private final String detail;
@@ -31,7 +33,7 @@ public enum BotCommand {
    * @param command line bot接收的指令
    * @return
    */
-  public static BotCommand enumOf(String command) {
+  public static BotCommand getBotCommand(String command) {
     if (command == null) {
       throw new NullPointerException("command is null");
     }
@@ -43,7 +45,7 @@ public enum BotCommand {
         }
       }
     }
-    throw new IllegalArgumentException("No enum constant " + command);
+    return null;
   }
 
   /**

@@ -11,20 +11,20 @@ public class BotCommandTest {
   public void testEnumOfUsingCommandEcho() {
     String originalMessageText = "/echo aa";
     final String command = originalMessageText.split(" ")[0];
-    final BotCommand botEnum = BotCommand.enumOf(command);
-    
+    final BotCommand botEnum = BotCommand.getBotCommand(command);
+
     assertEquals(BotCommand.ECHO, botEnum);
   }
-  
+
   @Test
   public void testEnumOfUsingCommandSweepstakes() {
     String originalMessageText = "/抽獎 aa";
     final String command = originalMessageText.split(" ")[0];
-    final BotCommand botEnum = BotCommand.enumOf(command);
-    
-    assertEquals(BotCommand.SWEEPSTAKE, botEnum);
+    final BotCommand botEnum = BotCommand.getBotCommand(command);
+
+    assertEquals(BotCommand.LUCKDRAW, botEnum);
   }
-  
+
   @Test
   public void testGetCommandsDetailNotNull() {
     String r = BotCommand.getCommandsDetail();
