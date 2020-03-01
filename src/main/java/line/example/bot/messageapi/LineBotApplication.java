@@ -70,27 +70,28 @@ public class LineBotApplication {
           String[] args = event.getMessage().getText().split(" ");
           String sweepstakesName = args[1];
           String keyword = args[2];
-          Sweepstake sweepstake = sweepstakeMap.get(keyword);
 
-          if (sweepstake == null) {
-            String userId = event.getSource().getUserId();
-            String senderId = event.getSource().getSenderId();
-            LineUser lineUser = LineBot.getInstance().getLineUser(senderId, userId, true);
-
-            sweepstake = new Sweepstake(senderId, sweepstakesName, keyword, lineUser);
-
-            sweepstakeMap.put(keyword, sweepstake);
-
-            StringBuilder txt = new StringBuilder();
-
-            txt.append("活動名稱:");
-            txt.append(sweepstakesName);
-            txt.append(System.lineSeparator());
-            txt.append("以下留言\"" + keyword + "\"即可參加抽獎喔");
-            return new TextMessage(txt.toString());
-          } else {
-            return new TextMessage("活動名稱:" + sweepstakesName + "被用囉");
+          if (getSweepstake(sweepstakesName) != null) {
+            return new TextMessage("活動名稱:\"" + sweepstakesName + "\"被用囉");
           }
+
+          if (sweepstakeMap.containsKey(keyword)) {
+            return new TextMessage("留言關鍵字\"" + keyword + "\"被用囉");
+          }
+          String userId = event.getSource().getUserId();
+          String senderId = event.getSource().getSenderId();
+          LineUser lineUser = LineBot.getInstance().getLineUser(senderId, userId, true);
+          Sweepstake sweepstake = new Sweepstake(senderId, sweepstakesName, keyword, lineUser);
+
+          sweepstakeMap.put(keyword, sweepstake);
+
+          StringBuilder txt = new StringBuilder();
+
+          txt.append("活動名稱:");
+          txt.append(sweepstakesName);
+          txt.append(System.lineSeparator());
+          txt.append("以下留言\"" + keyword + "\"即可參加抽獎喔");
+          return new TextMessage(txt.toString());
         });
 
     map.put(
