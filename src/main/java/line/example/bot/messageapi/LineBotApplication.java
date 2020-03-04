@@ -265,8 +265,6 @@ public class LineBotApplication {
               GuessResult result = game.guess(guessDigits);
               StringBuilder txt = new StringBuilder();
 
-              txt.append("遊戲名稱:1A2B");
-              txt.append(System.lineSeparator());
               txt.append("猜測玩家:" + lineUser.getDisplayName());
               txt.append(System.lineSeparator());
               txt.append("猜測次數:" + game.getGuessTimes());
@@ -280,8 +278,7 @@ public class LineBotApplication {
               if (result.getCountA() == game.getCpuAnswer().length()) {
                 guessGame = Optional.ofNullable(null);
                 txt.append(System.lineSeparator());
-                txt.append("遊戲結束，恭喜猜中玩家 " + lineUser.getDisplayName());
-                txt.append(System.lineSeparator());
+                txt.append("遊戲結束，恭喜猜中[" + game.getCpuAnswer() + "]玩家 " + lineUser.getDisplayName());
               }
 
               return new TextMessage(txt.toString());
