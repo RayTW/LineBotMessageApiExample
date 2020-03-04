@@ -139,7 +139,6 @@ public class LineBotApplication {
             txt.append("抽出人數:" + lucky.size());
             txt.append(System.lineSeparator());
             txt.append("中獎者:");
-            txt.append(System.lineSeparator());
 
             lucky.forEach(
                 user -> {
@@ -185,7 +184,6 @@ public class LineBotApplication {
           txt.append("自由參加，先答先贏");
           txt.append(System.lineSeparator());
           txt.append("遊戲創建者:" + lineUser.getDisplayName());
-          txt.append(System.lineSeparator());
 
           return new TextMessage(txt.toString());
         });
@@ -217,7 +215,6 @@ public class LineBotApplication {
           txt.append("題目:" + old.getCpuAnswer());
           txt.append(System.lineSeparator());
           txt.append("猜測次數:" + old.getGuessTimes());
-          txt.append(System.lineSeparator());
 
           return new TextMessage(txt.toString());
         });
@@ -270,15 +267,14 @@ public class LineBotApplication {
 
               txt.append("遊戲名稱:1A2B");
               txt.append(System.lineSeparator());
-              txt.append("猜測的玩家:" + lineUser.getDisplayName());
+              txt.append("猜測玩家:" + lineUser.getDisplayName());
               txt.append(System.lineSeparator());
               txt.append("猜測次數:" + game.getGuessTimes());
               txt.append(System.lineSeparator());
               txt.append("猜測結果:" + result.getCountA());
               txt.append("A");
-              txt.append("猜測結果:" + result.getCountB());
+              txt.append(result.getCountB());
               txt.append("B");
-              txt.append(System.lineSeparator());
 
               // 有玩家猜中，遊戲結束
               if (result.getCountA() == game.getCpuAnswer().length()) {
