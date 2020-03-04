@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
+import line.example.game.GuessGame;
+import line.example.game.GuessResult;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -21,9 +24,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class LineBotApplication {
   private Map<BotCommand, FunctionThrowable<MessageEvent<TextMessageContent>, Message>> map;
   private ConcurrentHashMap<String, Sweepstake> sweepstakeMap; // k=關鍵字,v=活動物件
+  private Optional<GuessGame> guessGame;
+  private ReentrantLock gameLock;
 
   public LineBotApplication() {
     sweepstakeMap = new ConcurrentHashMap<>();
+    guessGame = Optional.ofNullable(null);
+    gameLock = new ReentrantLock();
     stepup();
   }
 
@@ -148,6 +155,72 @@ public class LineBotApplication {
             return new TextMessage("沒有\"" + sweepstakesName + "\"抽獎活動");
           }
         });
+
+    map.put(
+        BotCommand.GUESS_BEGIN,
+        (event) -> {
+          boolean isNewGame = false;
+          gameLock.lock();
+          try {
+            if (guessGame.isPresent()) {
+              return new TextMessage("1A2B遊戲進行中");
+            }
+            isNewGame = true;
+          } finally {
+            gameLock.unlock();
+          }
+
+          String userId = event.getSource().getUserId();
+          String senderId = event.getSource().getSenderId();
+          LineUser lineUser = LineBot.getInstance().getLineUser(senderId, userId, true);
+          StringBuilder txt = new StringBuilder();
+
+          if (isNewGame) {
+            guessGame = Optional.ofNullable(new GuessGame(lineUser));
+            guessGame.get().reset();
+          }
+
+          txt.append("遊戲名稱:1A2B");
+          txt.append(System.lineSeparator());
+          txt.append("自由參加，先答先贏");
+          txt.append(System.lineSeparator());
+          txt.append("遊戲創建者:" + lineUser.getDisplayName());
+          txt.append(System.lineSeparator());
+
+          return new TextMessage(txt.toString());
+        });
+
+    map.put(
+        BotCommand.GUESS_FINISH,
+        (event) -> {
+          GuessGame old = null;
+          gameLock.lock();
+          try {
+            if (!guessGame.isPresent()) {
+              return new TextMessage("目前沒有1A2B遊戲");
+            } else {
+              old = guessGame.get();
+              guessGame = Optional.ofNullable(null);
+            }
+          } finally {
+            gameLock.unlock();
+          }
+          String userId = event.getSource().getUserId();
+          String senderId = event.getSource().getSenderId();
+          LineUser lineUser = LineBot.getInstance().getLineUser(senderId, userId, true);
+          StringBuilder txt = new StringBuilder();
+
+          txt.append("遊戲名稱:1A2B");
+          txt.append(System.lineSeparator());
+          txt.append("遊戲創建者:" + lineUser.getDisplayName());
+          txt.append(System.lineSeparator());
+          txt.append("題目:" + old.getCpuAnswer());
+          txt.append(System.lineSeparator());
+          txt.append("猜測次數:" + old.getGuessTimes());
+          txt.append(System.lineSeparator());
+
+          return new TextMessage(txt.toString());
+        });
   }
 
   /**
@@ -181,6 +254,45 @@ public class LineBotApplication {
             return new TextMessage(
                 user.getDisplayName() + "參加抽獎活動\"" + sweepstake.getName() + "\"成功");
           }
+        }
+        gameLock.lock();
+        try {
+          if (guessGame.isPresent()) {
+            GuessGame game = guessGame.get();
+            String guessDigits = originalMessageText.trim();
+
+            if (game.tryGuess(guessDigits)) {
+              String userId = event.getSource().getUserId();
+              String senderId = event.getSource().getSenderId();
+              LineUser lineUser = LineBot.getInstance().getLineUser(senderId, userId, true);
+              GuessResult result = game.guess(guessDigits);
+              StringBuilder txt = new StringBuilder();
+
+              txt.append("遊戲名稱:1A2B");
+              txt.append(System.lineSeparator());
+              txt.append("猜測的玩家:" + lineUser.getDisplayName());
+              txt.append(System.lineSeparator());
+              txt.append("猜測次數:" + game.getGuessTimes());
+              txt.append(System.lineSeparator());
+              txt.append("猜測結果:" + result.getCountA());
+              txt.append("A");
+              txt.append("猜測結果:" + result.getCountB());
+              txt.append("B");
+              txt.append(System.lineSeparator());
+
+              // 有玩家猜中，遊戲結束
+              if (result.getCountA() == game.getCpuAnswer().length()) {
+                guessGame = Optional.ofNullable(null);
+                txt.append(System.lineSeparator());
+                txt.append("遊戲結束，恭喜猜中玩家 " + lineUser.getDisplayName());
+                txt.append(System.lineSeparator());
+              }
+
+              return new TextMessage(txt.toString());
+            }
+          }
+        } finally {
+          gameLock.unlock();
         }
 
         return null;

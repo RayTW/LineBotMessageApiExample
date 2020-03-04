@@ -9,7 +9,9 @@ public enum BotCommand {
   ME("回應用戶個人資訊,ex: /我", "/me", "/我"),
   LUCKDRAW("抽獎活動, /抽獎 [抽獎活動名稱] [留言] ex: /抽獎 抽iphone手機 大吉大利", "/luckydraw", "/抽獎"),
   LUCKDRAW_FINISH("抽獎活動開獎, /開獎 [抽獎活動名稱] [要選出的抽獎人數] ex: /開獎 抽iphone手機 3", "/lucky", "/開獎"),
-  LUCKDRAW_STATUS("抽獎活動狀態, /抽獎狀態 [抽獎活動名稱] ex: /抽獎狀態 抽iphone手機", "/luckydrawstatus", "/抽獎狀態");
+  LUCKDRAW_STATUS("抽獎活動狀態, /抽獎狀態 [抽獎活動名稱] ex: /抽獎狀態 抽iphone手機", "/luckydrawstatus", "/抽獎狀態"),
+  GUESS_BEGIN("建立1A2B遊戲, /ab  ex: /開獎 抽iphone手機 3", "/ab"),
+  GUESS_FINISH("結束1A2B遊戲並顯示題目, /ba ex: /抽獎狀態 抽iphone手機", "/ba");
 
   private final String[] commands;
   private final String detail;
