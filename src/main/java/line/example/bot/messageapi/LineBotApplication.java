@@ -185,7 +185,7 @@ public class LineBotApplication {
           txt.append(System.lineSeparator());
           txt.append("自由參加，先答先贏");
           txt.append(System.lineSeparator());
-          txt.append("遊戲創建者:" + lineUser.getDisplayName());
+          txt.append("  創建者:" + lineUser.getDisplayName());
 
           return new TextMessage(txt.toString());
         });
@@ -209,11 +209,11 @@ public class LineBotApplication {
           LineUser lineUser = LineBot.getInstance().getLineUser(senderId, userId, true);
           StringBuilder txt = new StringBuilder();
 
-          txt.append("結束的遊戲名稱:1A2B");
+          txt.append("遊戲結束:1A2B");
           txt.append(System.lineSeparator());
-          txt.append("遊戲創建者:" + lineUser.getDisplayName());
+          txt.append("  創建者:" + lineUser.getDisplayName());
           txt.append(System.lineSeparator());
-          txt.append("題目:" + old.getCpuAnswer());
+          txt.append("  答案:" + old.getCpuAnswer());
           txt.append(System.lineSeparator());
           txt.append("猜測次數:" + old.getGuessTimes());
 
@@ -269,6 +269,8 @@ public class LineBotApplication {
               txt.append("猜測玩家:" + lineUser.getDisplayName());
               txt.append(System.lineSeparator());
               txt.append("猜測次數:" + game.getGuessTimes());
+              txt.append(System.lineSeparator());
+              txt.append("猜測數字:" + guessDigits);
               txt.append(System.lineSeparator());
               txt.append("猜測結果:" + result.getCountA());
               txt.append("A");
