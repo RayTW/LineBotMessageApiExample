@@ -30,37 +30,6 @@ public class LineBot {
    * @param userId 用戶id
    * @return
    */
-  public LineUser getLineUserMe(String roomIdOrGroupId, String userId, boolean useCache)
-      throws Exception {
-    LineUser lineUser = null;
-
-    if (useCache) {
-      lineUser = lineUserCache.get(userId);
-    }
-
-    if (roomIdOrGroupId == userId) {
-      UserProfileResponse response = lineMessagingClient.getProfile(userId).get();
-      lineUser =
-          new LineUser(response.getUserId(), response.getDisplayName(), response.getPictureUrl());
-    }
-
-    if (lineUser == null) {
-      UserProfileResponse response = getInfo(roomIdOrGroupId, userId);
-      lineUser =
-          new LineUser(response.getUserId(), response.getDisplayName(), response.getPictureUrl());
-      lineUserCache.put(userId, lineUser);
-    }
-
-    return lineUser;
-  }
-
-  /**
-   * 取得user資訊.
-   *
-   * @param roomIdOrGroupId 房id或群id
-   * @param userId 用戶id
-   * @return
-   */
   public LineUser getLineUser(String roomIdOrGroupId, String userId, boolean useCache)
       throws Exception {
     LineUser lineUser = null;
@@ -87,12 +56,21 @@ public class LineBot {
    * @return
    */
   public UserProfileResponse getInfo(String roomIdOrGroupId, String userId) throws Exception {
-
     UserProfileResponse ret = null;
-    try {
-      ret = lineMessagingClient.getGroupMemberProfile(roomIdOrGroupId, userId).get();
-    } catch (Exception e) {
-      e.printStackTrace();
+    if (roomIdOrGroupId.equals(userId)) {
+      try {
+        ret = lineMessagingClient.getProfile(userId).get();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
+    if (ret == null) {
+      try {
+        ret = lineMessagingClient.getGroupMemberProfile(roomIdOrGroupId, userId).get();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
 
     if (ret == null) {

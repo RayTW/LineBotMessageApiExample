@@ -66,27 +66,6 @@ public class LineBotApplication {
           txt.append(user.getPictureUrl());
           return new TextMessage(txt.toString());
         });
-    map.put(
-        BotCommand.TEST,
-        (event) -> {
-          String userId = event.getSource().getUserId();
-          String senderId = event.getSource().getSenderId();
-          LineUser user = LineBot.getInstance().getLineUserMe(senderId, userId, false);
-          StringBuilder txt = new StringBuilder();
-
-          txt.append("使用者名稱:");
-          txt.append(user.getDisplayName());
-          txt.append(System.lineSeparator());
-          txt.append("使用者圖片:");
-          txt.append(user.getPictureUrl());
-          txt.append("senderId:");
-          txt.append(senderId);
-          txt.append(System.lineSeparator());
-          txt.append("userId:");
-          txt.append(userId);
-          txt.append(System.lineSeparator());
-          return new TextMessage(txt.toString());
-        });
 
     map.put(
         BotCommand.USER_ID,
