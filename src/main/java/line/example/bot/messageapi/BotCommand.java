@@ -4,6 +4,7 @@ import java.util.StringJoiner;
 
 public enum BotCommand {
   HELP("全部Bot指令", "/help", "/??", "/幫助"),
+  TEST("test", "/test", "/test"),
   ECHO("回應相同訊息, /echo [訊息] ex: /echo 我是訊息", "/echo"),
   USER_ID("回應用戶ID,ex: /userid", "/userid", "/用戶"),
   ME("回應用戶個人資訊,ex: /我", "/me", "/我"),
