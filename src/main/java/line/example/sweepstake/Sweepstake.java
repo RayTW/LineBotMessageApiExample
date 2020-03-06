@@ -1,4 +1,4 @@
-package line.example.bot.messageapi;
+package line.example.sweepstake;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.ThreadLocalRandom;
+import line.example.bot.messageapi.LineUser;
 
 /**
  * 抽獎活動.

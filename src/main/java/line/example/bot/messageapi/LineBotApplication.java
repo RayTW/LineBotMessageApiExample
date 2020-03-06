@@ -9,13 +9,12 @@ import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import line.example.game.GuessGame;
 import line.example.game.GuessResult;
+import line.example.sweepstake.SweepstakeManager;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -23,15 +22,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @LineMessageHandler
 public class LineBotApplication {
   private Map<BotCommand, FunctionThrowable<MessageEvent<TextMessageContent>, Message>> map;
-  private ConcurrentHashMap<String, Sweepstake> sweepstakeMap; // k=關鍵字,v=活動物件
   private ConcurrentHashMap<String, GuessGame> guessGameMap;
   private ReentrantLock gameLock;
+  private SweepstakeManager sweepstakeManager;
 
-  /** . */
+  /** 初始化服務應用. */
   public LineBotApplication() {
-    sweepstakeMap = new ConcurrentHashMap<>();
     guessGameMap = new ConcurrentHashMap<>();
     gameLock = new ReentrantLock();
+    sweepstakeManager = new SweepstakeManager();
     stepup();
   }
 
@@ -72,89 +71,10 @@ public class LineBotApplication {
         (event) -> {
           return new TextMessage("user id :" + event.getSource().getUserId());
         });
-    map.put(
-        BotCommand.LUCKDRAW,
-        (event) -> {
-          String[] args = event.getMessage().getText().split(" ");
-          String sweepstakesName = args[1];
-          String keyword = args[2];
-
-          if (getSweepstake(sweepstakesName) != null) {
-            return new TextMessage("活動名稱:\"" + sweepstakesName + "\"被用囉");
-          }
-
-          if (sweepstakeMap.containsKey(keyword)) {
-            return new TextMessage("留言關鍵字\"" + keyword + "\"被用囉");
-          }
-          String userId = event.getSource().getUserId();
-          String senderId = event.getSource().getSenderId();
-          LineUser lineUser = LineBot.getInstance().getLineUser(senderId, userId, true);
-          Sweepstake sweepstake = new Sweepstake(senderId, sweepstakesName, keyword, lineUser);
-
-          sweepstakeMap.put(keyword, sweepstake);
-
-          StringBuilder txt = new StringBuilder();
-
-          txt.append("活動名稱:");
-          txt.append(sweepstakesName);
-          txt.append(System.lineSeparator());
-          txt.append("以下留言\"" + keyword + "\"即可參加抽獎喔");
-          return new TextMessage(txt.toString());
-        });
-
-    map.put(
-        BotCommand.LUCKDRAW_STATUS,
-        (event) -> {
-          String[] args = event.getMessage().getText().split(" ");
-          String sweepstakesName = args[1];
-
-          Optional<Sweepstake> sweepstake = getSweepstake(sweepstakesName);
-
-          if (sweepstake.isPresent()) {
-            return new TextMessage(sweepstake.get().toString());
-          } else {
-            return new TextMessage("查看抽獎活動結果，目前沒有\"" + sweepstakesName + "\"抽獎活動");
-          }
-        });
-
-    map.put(
-        BotCommand.LUCKDRAW_FINISH,
-        (event) -> {
-          String[] args = event.getMessage().getText().split(" ");
-          String sweepstakesName = args[1];
-          String luckyUserCount = args[2];
-
-          Optional<Sweepstake> sweepstake = getSweepstake(sweepstakesName);
-
-          if (sweepstake.isPresent()) {
-            final List<LineUser> lucky =
-                sweepstake.get().getLuckyUser(Integer.parseInt(luckyUserCount));
-
-            StringBuilder txt = new StringBuilder();
-
-            txt.append("活動名稱:");
-            txt.append(sweepstakesName);
-            txt.append(System.lineSeparator());
-            txt.append("參加人數:" + sweepstake.get().getUserSize());
-            txt.append(System.lineSeparator());
-            txt.append("抽出人數:" + lucky.size());
-            txt.append(System.lineSeparator());
-            txt.append("中獎者:");
-
-            lucky.forEach(
-                user -> {
-                  txt.append(user.getDisplayName());
-                  txt.append(System.lineSeparator());
-                });
-
-            // 抽完中獎者，移除活動
-            sweepstakeMap.remove(sweepstake.get().getKeyword());
-
-            return new TextMessage(txt.toString());
-          } else {
-            return new TextMessage("沒有\"" + sweepstakesName + "\"抽獎活動");
-          }
-        });
+    map.put(BotCommand.LUCKYDRAW, sweepstakeManager::luckyDraw);
+    map.put(BotCommand.LUCKYDRAW_STATUS, sweepstakeManager::luckyStatus);
+    map.put(BotCommand.LUCKY_ALL, sweepstakeManager::luckyAll);
+    map.put(BotCommand.LUCKYDRAW_FINISH, sweepstakeManager::luckyFinish);
 
     map.put(
         BotCommand.GUESS_BEGIN,
@@ -221,50 +141,17 @@ public class LineBotApplication {
         });
   }
 
-  /**
-   * BOT機器人接收訊息.
-   *
-   * @param event 訊息事件
-   * @return
-   */
-  @EventMapping
-  public Message handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
-    try {
-      String command = event.getMessage().getText().split(" ")[0];
-      BotCommand botEnum = BotCommand.getBotCommand(command);
-
-      // 沒有符合的指令
-      if (botEnum == null) {
-        return handleMismatchCommandText(event);
-      }
-
-      FunctionThrowable<MessageEvent<TextMessageContent>, Message> action = map.get(botEnum);
-      // 符合的指令
-      return action.apply(event);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new TextMessage("出錯了，救救我~" + e);
-    }
-  }
-
   private Message handleMismatchCommandText(MessageEvent<TextMessageContent> event)
       throws Exception {
     String originalMessageText = event.getMessage().getText();
-    // 檢查是否為參加抽獎的關鍵字
-    Sweepstake sweepstake = sweepstakeMap.get(event.getMessage().getText());
+    // 用戶留言參加抽獎
+    Message reply = sweepstakeManager.joinLineUser(event);
 
     // 有相同關鍵字的抽獎活動
-    if (sweepstake != null) {
-      String userId = event.getSource().getUserId();
-      String senderId = event.getSource().getSenderId();
-
-      if (sweepstake.isValid(senderId, userId)) {
-        LineUser user = LineBot.getInstance().getLineUser(senderId, userId, true);
-
-        sweepstake.addUser(user);
-        return new TextMessage(user.getDisplayName() + "參加抽獎活動\"" + sweepstake.getName() + "\"成功");
-      }
+    if (reply != null) {
+      return reply;
     }
+
     String senderId = event.getSource().getSenderId();
     gameLock.lock();
     try {
@@ -305,23 +192,35 @@ public class LineBotApplication {
     return null;
   }
 
-  /**
-   * 用抽獎活動名稱取得活動物件.
-   *
-   * @param sweepstakesName 抽獎活動名稱
-   * @return
-   */
-  public Optional<Sweepstake> getSweepstake(String sweepstakesName) {
-    return sweepstakeMap
-        .values()
-        .stream()
-        .filter(obj -> obj.getName().equals(sweepstakesName))
-        .findFirst();
-  }
-
   public Map<BotCommand, FunctionThrowable<MessageEvent<TextMessageContent>, Message>>
       getActionMap() {
     return map;
+  }
+
+  /**
+   * BOT機器人接收訊息.
+   *
+   * @param event 訊息事件
+   * @return
+   */
+  @EventMapping
+  public Message handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
+    try {
+      String command = event.getMessage().getText().split(" ")[0];
+      BotCommand botEnum = BotCommand.getBotCommand(command);
+
+      // 沒有符合的指令
+      if (botEnum == null) {
+        return handleMismatchCommandText(event);
+      }
+
+      FunctionThrowable<MessageEvent<TextMessageContent>, Message> action = map.get(botEnum);
+      // 符合的指令
+      return action.apply(event);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new TextMessage("出錯了，救救我~" + e);
+    }
   }
 
   @EventMapping
