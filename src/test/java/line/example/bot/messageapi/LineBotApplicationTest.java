@@ -1,6 +1,7 @@
 package line.example.bot.messageapi;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
@@ -42,7 +43,8 @@ public class LineBotApplicationTest {
 
     try {
       TextMessage msg = (TextMessage) obj.handleTextMessageEvent(event);
-      System.out.println(msg);
+
+      assertNull(msg);
     } catch (Exception e) {
       e.printStackTrace();
     }

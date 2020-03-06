@@ -192,20 +192,25 @@ public class SweepstakeManager {
   public Message joinLineUser(MessageEvent<TextMessageContent> event) throws Exception {
     String senderId = event.getSource().getSenderId();
     CopyOnWriteArrayList<Sweepstake> list = sweepstakeMap.get(senderId);
-    // 檢查是否為參加抽獎的關鍵字
-    Optional<Sweepstake> sweepstake =
-        list.stream().filter(o -> o.getKeyword().equals(event.getMessage().getText())).findFirst();
 
-    // 有相同關鍵字的抽獎活動
-    if (sweepstake.isPresent()) {
-      String userId = event.getSource().getUserId();
+    if (list != null && list.size() > 0) {
+      // 檢查是否為參加抽獎的關鍵字
+      Optional<Sweepstake> sweepstake =
+          list.stream()
+              .filter(o -> o.getKeyword().equals(event.getMessage().getText()))
+              .findFirst();
 
-      if (sweepstake.get().isValid(senderId, userId)) {
-        LineUser user = LineBot.getInstance().getLineUser(senderId, userId, true);
+      // 有相同關鍵字的抽獎活動
+      if (sweepstake.isPresent()) {
+        String userId = event.getSource().getUserId();
 
-        sweepstake.get().addUser(user);
-        return new TextMessage(
-            user.getDisplayName() + "參加抽獎活動\"" + sweepstake.get().getName() + "\"成功");
+        if (sweepstake.get().isValid(senderId, userId)) {
+          LineUser user = LineBot.getInstance().getLineUser(senderId, userId, true);
+
+          sweepstake.get().addUser(user);
+          return new TextMessage(
+              user.getDisplayName() + "參加抽獎活動\"" + sweepstake.get().getName() + "\"成功");
+        }
       }
     }
 
