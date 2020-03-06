@@ -7,11 +7,12 @@ public enum BotCommand {
   ECHO("回應相同訊息, /echo [訊息] ex: /echo 我是訊息", "/echo"),
   USER_ID("回應用戶ID,ex: /userid", "/userid", "/用戶"),
   ME("回應用戶個人資訊,ex: /我", "/me", "/我"),
-  LUCKDRAW("抽獎活動, /抽獎 [抽獎活動名稱] [留言] ex: /抽獎 抽iphone手機 大吉大利", "/luckydraw", "/抽獎"),
-  LUCKDRAW_FINISH("抽獎活動開獎, /開獎 [抽獎活動名稱] [要選出的抽獎人數] ex: /開獎 抽iphone手機 3", "/lucky", "/開獎"),
-  LUCKDRAW_STATUS("抽獎活動狀態, /抽獎狀態 [抽獎活動名稱] ex: /抽獎狀態 抽iphone手機", "/luckydrawstatus", "/抽獎狀態"),
+  LUCKYDRAW("抽獎活動, /抽獎 [抽獎活動名稱] [留言] ex: /抽獎 抽iphone手機 大吉大利", "/luckydraw", "/抽獎"),
+  LUCKYDRAW_FINISH("抽獎活動開獎, /開獎 [抽獎活動名稱] [要選出的抽獎人數] ex: /開獎 抽iphone手機 3", "/lucky", "/開獎"),
+  LUCKYDRAW_STATUS("抽獎活動狀態, /抽獎狀態 [抽獎活動名稱] ex: /抽獎狀態 抽iphone手機", "/luckydrawstatus", "/抽獎狀態"),
+  LUCKY_ALL("顯示全部抽獎活動, ex: /luckyall", "/luckyall"),
   GUESS_BEGIN("建立1A2B遊戲,ex: /ab", "/ab"),
-  GUESS_FINISH("結束1A2B遊戲並顯示答案, /ba ex: /ba", "/ba");
+  GUESS_FINISH("結束1A2B遊戲並顯示答案, ex: /ba", "/ba");
 
   private final String[] commands;
   private final String detail;

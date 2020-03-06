@@ -22,7 +22,7 @@ public class BotCommandTest {
     final String command = originalMessageText.split(" ")[0];
     final BotCommand botEnum = BotCommand.getBotCommand(command);
 
-    assertEquals(BotCommand.LUCKDRAW, botEnum);
+    assertEquals(BotCommand.LUCKYDRAW, botEnum);
   }
 
   @Test
