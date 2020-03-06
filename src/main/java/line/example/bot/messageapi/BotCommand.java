@@ -11,7 +11,7 @@ public enum BotCommand {
   LUCKDRAW_FINISH("抽獎活動開獎, /開獎 [抽獎活動名稱] [要選出的抽獎人數] ex: /開獎 抽iphone手機 3", "/lucky", "/開獎"),
   LUCKDRAW_STATUS("抽獎活動狀態, /抽獎狀態 [抽獎活動名稱] ex: /抽獎狀態 抽iphone手機", "/luckydrawstatus", "/抽獎狀態"),
   GUESS_BEGIN("建立1A2B遊戲,ex: /ab", "/ab"),
-  GUESS_FINISH("結束1A2B遊戲並顯示答案, /ba ex: /ba", "/ba");
+  GUESS_FINISH("結束1A2B遊戲並顯示答案, ex: /ba", "/ba");
 
   private final String[] commands;
   private final String detail;
