@@ -126,8 +126,6 @@ public class CodaGameManager {
           txt.append(System.lineSeparator());
           txt.append("次數:" + game.getGuessTimes());
           txt.append(System.lineSeparator());
-          txt.append("數值:" + guessDigits);
-          txt.append(System.lineSeparator());
           txt.append("結果:" + result.getLower() + "~" + result.getUpper());
 
           // 有玩家猜中，遊戲結束
