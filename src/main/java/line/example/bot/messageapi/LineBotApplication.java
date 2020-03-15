@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import line.example.game.GuessGameManager;
-import line.example.game.coda.CodaGameManager;
+import line.example.game.guess1a2b.CodaGameManager;
 import line.example.sweepstake.SweepstakeManager;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

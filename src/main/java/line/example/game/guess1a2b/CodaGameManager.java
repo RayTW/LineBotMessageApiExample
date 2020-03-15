@@ -1,4 +1,4 @@
-package line.example.game.coda;
+package line.example.game.guess1a2b;
 
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
