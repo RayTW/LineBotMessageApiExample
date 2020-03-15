@@ -1,4 +1,4 @@
-package line.example.game.guess1a2b;
+package line.example.game.coda;
 
 public class CodaResult {
   private int upper;

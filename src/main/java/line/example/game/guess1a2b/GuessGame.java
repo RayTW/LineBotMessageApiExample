@@ -1,4 +1,4 @@
-package line.example.game;
+package line.example.game.guess1a2b;
 
 import java.util.concurrent.ThreadLocalRandom;
 import line.example.bot.messageapi.LineUser;

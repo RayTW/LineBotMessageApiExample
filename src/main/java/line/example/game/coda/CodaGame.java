@@ -1,4 +1,4 @@
-package line.example.game.guess1a2b;
+package line.example.game.coda;
 
 import java.time.temporal.ValueRange;
 import java.util.concurrent.ThreadLocalRandom;

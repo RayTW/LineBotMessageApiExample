@@ -1,4 +1,4 @@
-package line.example.game;
+package line.example.game.guess1a2b;
 
 public class GuessResult {
   private int countA;
