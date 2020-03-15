@@ -12,7 +12,9 @@ public enum BotCommand {
   LUCKYDRAW_STATUS("抽獎活動狀態, /抽獎狀態 [抽獎活動名稱] ex: /抽獎狀態 抽iphone手機", "/luckydrawstatus", "/抽獎狀態"),
   LUCKY_ALL("顯示全部抽獎活動, ex: /luckyall", "/luckyall"),
   GUESS_BEGIN("建立1A2B遊戲,ex: /ab", "/ab"),
-  GUESS_FINISH("結束1A2B遊戲並顯示答案, ex: /ba", "/ba");
+  GUESS_FINISH("結束1A2B遊戲並顯示答案, ex: /ba", "/ba"),
+  CODA_BEGIN("建立終極密碼遊戲,ex: /coda [最大範圍數](選填)", "/coda"),
+  CODA_FINISH("結束終極密碼遊戲並顯示答案, ex: /adoc", "/adoc");
 
   private final String[] commands;
   private final String detail;
