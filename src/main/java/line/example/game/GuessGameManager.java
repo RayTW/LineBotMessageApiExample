@@ -115,13 +115,13 @@ public class GuessGameManager {
           GuessResult result = game.guess(guessDigits);
           StringBuilder txt = new StringBuilder();
 
-          txt.append("猜測玩家:" + lineUser.getDisplayName());
+          txt.append("玩家:" + lineUser.getDisplayName());
           txt.append(System.lineSeparator());
-          txt.append("猜測次數:" + game.getGuessTimes());
+          txt.append("次數:" + game.getGuessTimes());
           txt.append(System.lineSeparator());
-          txt.append("猜測數字:" + guessDigits);
+          txt.append("數字:" + guessDigits);
           txt.append(System.lineSeparator());
-          txt.append("猜測結果:" + result.getCountA());
+          txt.append("結果:" + result.getCountA());
           txt.append("A");
           txt.append(result.getCountB());
           txt.append("B");
