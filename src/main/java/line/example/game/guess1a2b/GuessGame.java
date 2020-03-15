@@ -114,7 +114,7 @@ public class GuessGame {
   }
 
   /**
-   * 取得目前猜第n次次數.
+   * 取得目前猜第n次數.
    *
    * @return
    */

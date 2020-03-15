@@ -40,13 +40,15 @@ public class CodaGameManager {
     }
 
     String userId = event.getSource().getUserId();
+    String[] commands = event.getMessage().getText().split(" ");
+    String max = commands.length > 0 ? commands[1] : null;
     LineUser lineUser = LineBot.getInstance().getLineUser(senderId, userId, true);
     StringBuilder txt = new StringBuilder();
     ValueRange range = null;
 
     if (isNewGame) {
       CodaGame guessGame = new CodaGame(lineUser);
-      range = guessGame.reset("1000");
+      range = guessGame.reset(max);
       groupMap.put(senderId, guessGame);
     }
 

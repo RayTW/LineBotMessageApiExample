@@ -14,6 +14,7 @@ public class CodaGame {
   private int anser; // 答案
   private int guessTimes; // 猜的次數
   private CodaResult bound;
+  private static final int DEFAULT_ANSER_RANGE = 100;
 
   public CodaGame(LineUser organizerUser) {
     this.organizerUser = organizerUser;
@@ -31,12 +32,12 @@ public class CodaGame {
     try {
       b = Integer.parseInt(asnerBound);
     } catch (Exception e) {
-      b = 1000; // use default
+      b = DEFAULT_ANSER_RANGE; // use default
     }
     guessTimes = 0;
     anser = ThreadLocalRandom.current().nextInt(b);
     this.bound = new CodaResult();
-    this.bound.setLower(0);
+    this.bound.setLower(1);
     this.bound.setUpper(b);
 
     return ValueRange.of(bound.getLower(), bound.getUpper());
@@ -92,7 +93,7 @@ public class CodaGame {
         bound.setUpper(guess);
       }
     }
-
+    guessTimes++;
     return bound;
   }
 
@@ -106,7 +107,7 @@ public class CodaGame {
   }
 
   /**
-   * 取得目前猜第n次次數.
+   * 取得目前猜第n次數.
    *
    * @return
    */

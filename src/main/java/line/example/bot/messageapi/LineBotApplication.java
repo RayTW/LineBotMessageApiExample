@@ -10,7 +10,6 @@ import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
-
 import line.example.game.coda.CodaGameManager;
 import line.example.game.guess1a2b.GuessGameManager;
 import line.example.sweepstake.SweepstakeManager;
