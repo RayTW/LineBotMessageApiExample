@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import line.example.game.GuessGameManager;
+import line.example.game.coda.CodaGameManager;
 import line.example.sweepstake.SweepstakeManager;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,11 +22,13 @@ public class LineBotApplication {
   private Map<BotCommand, FunctionThrowable<MessageEvent<TextMessageContent>, Message>> map;
   private SweepstakeManager sweepstakeManager;
   private GuessGameManager guessGameManager;
+  private CodaGameManager codaGameManager;
 
   /** 初始化服務應用. */
   public LineBotApplication() {
     guessGameManager = new GuessGameManager();
     sweepstakeManager = new SweepstakeManager();
+    codaGameManager = new CodaGameManager();
     stepup();
   }
 
@@ -72,21 +75,32 @@ public class LineBotApplication {
     map.put(BotCommand.LUCKYDRAW_FINISH, sweepstakeManager::luckyFinish);
     map.put(BotCommand.GUESS_BEGIN, guessGameManager::begin);
     map.put(BotCommand.GUESS_FINISH, guessGameManager::finish);
+    map.put(BotCommand.CODA_BEGIN, codaGameManager::begin);
+    map.put(BotCommand.CODA_FINISH, codaGameManager::finish);
   }
 
   private Message handleMismatchCommandText(MessageEvent<TextMessageContent> event)
       throws Exception {
-    // 用戶留言參加抽獎
-    Message reply = sweepstakeManager.joinLineUser(event);
-
-    // 有相同關鍵字的抽獎活動
-    if (reply != null) {
-      return reply;
-    }
+    Message reply = null;
 
     reply = guessGameManager.guess(event);
 
     // 玩家的回應符合參與1A2B遊戲
+    if (reply != null) {
+      return reply;
+    }
+
+    reply = codaGameManager.guess(event);
+
+    // 玩家的回應符合參與終極密碼遊戲
+    if (reply != null) {
+      return reply;
+    }
+
+    // 用戶留言參加抽獎
+    reply = sweepstakeManager.joinLineUser(event);
+
+    // 有相同關鍵字的抽獎活動
     if (reply != null) {
       return reply;
     }
