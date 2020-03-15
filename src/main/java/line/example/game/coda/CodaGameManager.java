@@ -41,7 +41,7 @@ public class CodaGameManager {
 
     String userId = event.getSource().getUserId();
     String[] commands = event.getMessage().getText().split(" ");
-    String max = commands.length > 0 ? commands[1] : null;
+    String max = commands.length > 1 ? commands[1] : null;
     LineUser lineUser = LineBot.getInstance().getLineUser(senderId, userId, true);
     StringBuilder txt = new StringBuilder();
     ValueRange range = null;
