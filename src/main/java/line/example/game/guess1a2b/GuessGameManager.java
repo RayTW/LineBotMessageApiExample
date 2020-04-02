@@ -4,6 +4,7 @@ import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
 import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.model.message.TextMessage;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import line.example.bot.messageapi.LineBot;
@@ -41,16 +42,19 @@ public class GuessGameManager {
     String userId = event.getSource().getUserId();
     LineUser lineUser = LineBot.getInstance().getLineUser(senderId, userId, true);
     StringBuilder txt = new StringBuilder();
+    String[] args = event.getMessage().getText().split(" ");
+    String guessTime = args.length >= 2 ? args[1] : null;
+    GuessGame guessGame = null;
 
     if (isNewGame) {
-      GuessGame guessGame = new GuessGame(lineUser);
+      guessGame = new GuessGame(lineUser, guessTime);
       guessGame.reset();
       guessGameMap.put(senderId, guessGame);
     }
 
     txt.append("遊戲名稱:1A2B");
     txt.append(System.lineSeparator());
-    txt.append("自由參加，先答先贏");
+    txt.append("自由參加，先答先贏，每人可猜" + guessGame.getGuessTimesDefault() + "次");
     txt.append(System.lineSeparator());
     txt.append("囗創建者:" + lineUser.getDisplayName());
 
@@ -86,8 +90,6 @@ public class GuessGameManager {
     txt.append("囗創建者:" + lineUser.getDisplayName());
     txt.append(System.lineSeparator());
     txt.append("囗囗答案:" + old.getCpuAnswer());
-    txt.append(System.lineSeparator());
-    txt.append("猜測次數:" + old.getGuessTimes());
 
     return new TextMessage(txt.toString());
   }
@@ -108,16 +110,17 @@ public class GuessGameManager {
       GuessGame game = guessGameMap.get(senderId);
       if (game != null) {
         String guessDigits = message.trim();
+        String userId = event.getSource().getUserId();
+        Optional<GuessResult> resultRef = game.tryGuess(userId, guessDigits);
 
-        if (game.tryGuess(guessDigits)) {
-          String userId = event.getSource().getUserId();
+        if (resultRef.isPresent()) {
           LineUser lineUser = LineBot.getInstance().getLineUser(senderId, userId, true);
-          GuessResult result = game.guess(guessDigits);
+          GuessResult result = resultRef.get();
           StringBuilder txt = new StringBuilder();
 
           txt.append("玩家:" + lineUser.getDisplayName());
           txt.append(System.lineSeparator());
-          txt.append("次數:" + game.getGuessTimes());
+          txt.append("剩下:" + game.getGuessTimes(userId));
           txt.append(System.lineSeparator());
           txt.append("數字:" + guessDigits);
           txt.append(System.lineSeparator());
