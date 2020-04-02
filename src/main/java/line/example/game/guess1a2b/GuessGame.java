@@ -150,4 +150,8 @@ public class GuessGame {
   public LineUser getOrganizerUser() {
     return organizerUser;
   }
+
+  public int getGuessTimesDefault() {
+    return guessTimesDefault;
+  }
 }

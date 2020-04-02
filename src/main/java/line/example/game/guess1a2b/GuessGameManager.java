@@ -44,16 +44,17 @@ public class GuessGameManager {
     StringBuilder txt = new StringBuilder();
     String[] args = event.getMessage().getText().split(" ");
     String guessTime = args.length >= 2 ? args[1] : null;
+    GuessGame guessGame = null;
 
     if (isNewGame) {
-      GuessGame guessGame = new GuessGame(lineUser, guessTime);
+      guessGame = new GuessGame(lineUser, guessTime);
       guessGame.reset();
       guessGameMap.put(senderId, guessGame);
     }
 
     txt.append("遊戲名稱:1A2B");
     txt.append(System.lineSeparator());
-    txt.append("自由參加，先答先贏");
+    txt.append("自由參加，先答先贏，每人可猜" + guessGame.getGuessTimesDefault() + "次");
     txt.append(System.lineSeparator());
     txt.append("囗創建者:" + lineUser.getDisplayName());
 
